@@ -48,7 +48,7 @@
         # launch the correct $SHELL in its :terminal 
         export SHELL=${pkgs.bashInteractive}/bin/bash
         echo "welcome to the aerc shell"
-        touch /home/rs/touched
+        export PATH=${pkgs.aerc}/share/aerc/filters:$PATH
       '';
     };
     }
