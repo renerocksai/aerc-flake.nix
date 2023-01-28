@@ -43,4 +43,4 @@ exec $PRE_CMD w3m \
 	-o display_link_number=true
 ```
 
-Note the shebang line and the use of socksify.
+Note the shebang line, and the use of w3m and socksify.
