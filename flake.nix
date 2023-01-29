@@ -1,24 +1,43 @@
 {
-
-  description = "Dev shell for aerc, with paths set up for me";
+  description = "aerc + cmdline tools + links in ~/.aerc-tools";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/release-22.11";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
   outputs = { self, nixpkgs, flake-utils, ...} @inputs : 
-
-    # let systems = builtins.attrNames inputs.zig.packages;
+  # let
+  #   overlays = [
+  #     (final: prev: { _ = prev.aerc.override { 
+  #       runtimeDependencies = pkgs : with pkgs; [
+  #         bat
+  #         less
+  #         aerc
+  #         gawk
+  #         gnused
+  #         pandoc
+  #         colordiff
+  #         neovim
+  #         # for socksify: dante
+  #         dante
+  #         w3m
+  #         bashInteractive 
+  #         catimg
+  #         mypython
+  #         self.packages.aerc-tools-install
+  #       ]; }; 
+  #     })
+  #   ];
   # in
-   flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = nixpkgs.legacyPackages.${system}; 
-      mypython = pkgs.python39.withPackages(p: with p; [p.vobject]);
+    flake-utils.lib.eachDefaultSystem (system:
+  let 
+    pkgs = nixpkgs.legacyPackages.${system} ; 
+    # pkgs = import nixpkgs { inherit overlays system;} ; 
+    mypython = pkgs.python39.withPackages(p: with p; [p.vobject]);
 
-      in
-      rec {
-
-    packages.system.aerc-tools = pkgs.writeShellScriptBin "install" ''
-        # TODO: prepare /var/run/renerocksai-aerc 
+  in rec {
+    packages.aerc-tools-install = pkgs.writeShellScriptBin "aerc-tools-install" ''
+        # prepare AERC_TOOLS_BIN
         # ln all our executables there 
         # in configs, we use those in shebang lines
         export AERC_TOOLS_BIN=~/.aerc-tools;
@@ -37,44 +56,73 @@
         ln -s ${pkgs.bashInteractive}/bin/bash $AERC_TOOLS_BIN/bash
         ln -s ${mypython}/bin/python $AERC_TOOLS_BIN/python
         export PATH=$AERC_TOOLS_BIN:$PATH
+    '';
+
+    packages.aerc-run = pkgs.writeShellApplication { 
+      name = "aerc-run";
+      runtimeInputs = with pkgs; [
+          bat
+          less
+          aerc
+          gawk
+          gnused
+          pandoc
+          colordiff
+          neovim
+          # for socksify: dante
+          dante
+          w3m
+          bashInteractive 
+          catimg
+          mypython
+          packages.aerc-tools-install
+          aerc # overlay added all other runtime deps
+          bashInteractive
+      ]; 
+      text = ''
+        #!${pkgs.stdenv.shell}
+        aerc-tools-install
+        export AERC_TOOLS_BIN=~/.aerc-tools;
+        export PATH=$AERC_TOOLS_BIN:$PATH
+        aerc
       '';
+    };
+
+    defaultPackage = packages.aerc-run;
 
     # we want a shell, where all relevant executables, filters etc 
     # are on the path, so we don't need explicit, package-specific 
     # nix-store paths in our config
     devShells.default = pkgs.mkShell {
       nativeBuildInputs = with pkgs; [
-        bat
-        less
-        aerc
-        gawk
-        gnused
-        pandoc
-        colordiff
-        neovim
-        # for socksify: dante
-        dante
-        w3m
-        bashInteractive 
-        catimg
-        mypython
-        packages.system.aerc-tools
+          bat
+          less
+          aerc
+          gawk
+          gnused
+          pandoc
+          colordiff
+          neovim
+          # for socksify: dante
+          dante
+          w3m
+          bashInteractive 
+          catimg
+          mypython
+          packages.aerc-tools-install
+          aerc # overlay added all other runtime deps
+          bashInteractive
       ];
 
       shellHook = ''
-        # once we set SHELL to point to the interactive bash, neovim will 
-        # launch the correct $SHELL in its :terminal 
         export SHELL=${pkgs.bashInteractive}/bin/bash
         echo "welcome to the aerc shell"
         export PATH=${pkgs.aerc}/share/aerc/filters:$PATH
 
-        ${packages.system.aerc-tools}/bin/install
+        ${packages.aerc-tools-install}/bin/aerc-tools-install
         export AERC_TOOLS_BIN=~/.aerc-tools;
       '';
     };
-    }
-
-  );
-
+  });
 }
 
