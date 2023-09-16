@@ -60,7 +60,7 @@
         aerc-tools-install
         export AERC_TOOLS_BIN=~/.aerc-tools;
         export PATH=$AERC_TOOLS_BIN:$PATH
-        aerc
+        aerc "$@"
       '';
     };
 
