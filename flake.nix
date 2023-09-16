@@ -1,34 +1,11 @@
 {
   description = "aerc + cmdline tools + links in ~/.aerc-tools";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/release-22.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
   outputs = { self, nixpkgs, flake-utils, ...} @inputs : 
-  # let
-  #   overlays = [
-  #     (final: prev: { _ = prev.aerc.override { 
-  #       runtimeDependencies = pkgs : with pkgs; [
-  #         bat
-  #         less
-  #         aerc
-  #         gawk
-  #         gnused
-  #         pandoc
-  #         colordiff
-  #         neovim
-  #         # for socksify: dante
-  #         dante
-  #         w3m
-  #         bashInteractive 
-  #         catimg
-  #         mypython
-  #         self.packages.aerc-tools-install
-  #       ]; }; 
-  #     })
-  #   ];
-  # in
     flake-utils.lib.eachDefaultSystem (system:
   let 
     pkgs = nixpkgs.legacyPackages.${system} ; 
@@ -63,7 +40,6 @@
       runtimeInputs = with pkgs; [
           bat
           less
-          aerc
           gawk
           gnused
           pandoc
