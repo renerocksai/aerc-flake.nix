@@ -111,7 +111,7 @@
             owner = "~renerocksai";
             repo = "aerc-oauth2-proxy";
             rev = "a6a7cedb84a233047377a549211b899e017e2529";
-            hash = "sha256-AF7nyfE1zFXUe5jnRQSqzVfpwrjBqmzUn1V4t4vOq00=";
+            hash = "sha256-m5MMTLj9W4zGzfdNdvM9OnEaceyMHrjbC4syO1JSwME=";
             vc = "git";
         };
         buildInputs = [
