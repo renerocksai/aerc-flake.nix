@@ -60,7 +60,7 @@
           catimg
           aercpython
           packages.aerc-tools-install
-          aerc # overlay added all other runtime deps
+          aerc 
           bashInteractive
       ]; 
       text = ''
@@ -86,7 +86,7 @@
           find ${packages.aerc-run.out}/
           cp -vr ${packages.aerc-run.out}/bin/aerc-run $out/bin/
           cp -vr ${packages.emailproxy-run}/bin/emailproxy $out/bin/
-          mv $out/bin/aerc $out/bin/aerc-internal
+          mv $out/bin/aerc $out/bin/.aerc-internal
           mv $out/bin/aerc-run $out/bin/aerc
         '';
     };
@@ -110,8 +110,8 @@
         src = pkgs.fetchFromSourcehut {
             owner = "~renerocksai";
             repo = "aerc-oauth2-proxy";
-            rev = "master";
-            hash = "sha256-z2/QLiaCtNgTJFQKZnHEi1ayb5tzQONFI0dhOqnCoYA=";
+            rev = "a6a7cedb84a233047377a549211b899e017e2529";
+            hash = "sha256-AF7nyfE1zFXUe5jnRQSqzVfpwrjBqmzUn1V4t4vOq00=";
             vc = "git";
         };
         buildInputs = [
